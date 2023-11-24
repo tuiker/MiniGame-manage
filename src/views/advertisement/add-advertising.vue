@@ -1,0 +1,187 @@
+<template>
+  <div class="game">
+    <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="200px">
+      <el-form-item label="广告名称:" prop="advName" placeholder="请输入广告名称">
+        <el-input v-model="ruleForm.advName" style="width: 400px;"></el-input>
+      </el-form-item>
+      <el-form-item label="游戏类型:" prop="advTypeId">
+        <el-radio-group v-model="ruleForm.advTypeId" v-for="item in GameTypeList" :key="item.id">
+          <el-radio :label=item.id>{{ item.typeName }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="广告封面类型:" prop="imgType">
+        <el-radio v-model="ruleForm.imgType" :label="1">图片</el-radio>
+        <el-radio v-model="ruleForm.imgType" :label="2">视频</el-radio>
+      </el-form-item>
+      <el-form-item v-show="ruleForm.imgType === 1" label="广告封面:" prop="advImgValue"
+        :rules="ruleForm.imgType === 1 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
+        <upload :limit="1" :file-list="advImgList" :fileSize="10" @getUrl="getadImgUrl($event, 1)" />
+      </el-form-item>
+      <el-form-item v-show="ruleForm.imgType === 2" label="广告封面:" prop="advVideoValue"
+        :rules="ruleForm.imgType === 2 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
+        <upload-file :limit="1" :accept="'.mp4'" :file-list="advImgList" @getUrl="getadImgUrl($event, 2)" />
+      </el-form-item>
+      <el-form-item label="广告路径类型:" prop="urlType">
+        <el-radio v-model="ruleForm.urlType" :label="1">广告链接</el-radio>
+        <el-radio v-model="ruleForm.urlType" :label="2">上传广告包</el-radio>
+        <el-radio v-model="ruleForm.urlType" :label="3">加粉</el-radio>
+      </el-form-item>
+      <el-form-item v-show="ruleForm.urlType === 1" label="广告链接:" prop="advUrlValue"
+        :rules="ruleForm.urlType === 1 ? { required: true, message: '请填写广告链接地址', trigger: 'change' } : null">
+        <el-input type="textarea" resize="none" :rows="4" maxlength="200" v-model="ruleForm.advUrlValue" placeholder="请输入"
+          style="width: 400px;"></el-input>
+      </el-form-item>
+      <el-form-item v-show="ruleForm.urlType === 2" label="上传广告包:" prop="advPackageUrlValue"
+        :rules="ruleForm.urlType === 2 ? { required: true, message: '请上传广告包', trigger: 'change' } : null">
+        <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)" />
+      </el-form-item>
+      <el-form-item v-show="ruleForm.urlType === 3" label="加粉账号:" prop="attentionTarget"
+        :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入加粉账号', trigger: 'blur' } : null">
+        <el-input v-model="ruleForm.attentionTarget" style="width: 400px;" placeholder="请输入加粉账号"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+        <el-button style="margin-left: 30px;" @click="Back">返回</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+import Upload from './components/Upload.vue'
+import UploadFile from './components/UploadFile.vue'
+import { GetGameType } from '@/api/tool'
+import { AddAdv } from '@/api/advertisement'
+
+export default {
+  data() {
+    return {
+      advImgList: [],
+      CarrierList: [],
+      GameTypeList: [],
+      LanguageList: [],
+      AdPositionIds: [],
+      packageUrlList: [],
+      ruleForm: {
+        "advName": '',
+        "advTypeId": '',
+        "imgType": 1,
+        "advImg": '',
+        "advImgValue": '',
+        "advVideoValue": '',
+        "advUrl": '',
+        "urlType": 1,
+        "advUrlValue": '',
+        "advPackageUrlValue": '',
+        "attentionTarget": '',
+      },
+      rules: {
+        advName: [
+          { required: true, message: '请输入广告名称', trigger: 'blur' },
+        ],
+        advTypeId: [
+          { required: true, message: '请选择游戏类型', trigger: 'change' }
+        ],
+        advImg: [{ required: true, message: '请上传广告封面', trigger: 'change' }],
+        advUrl: [
+          { required: true, message: '请填写广告地址', trigger: 'blur' }
+        ]
+      },
+      imageUrl: '',
+      describe: '',
+    }
+  },
+  components: {
+    Upload,
+    UploadFile
+  },
+  created() {
+    //获取游戏类型
+    GetGameType().then(res => {
+      this.GameTypeList = res.data
+    })
+  },
+  methods: {
+    //提交
+    submitForm(formName) {
+      let instance = this;
+
+      if (this.ruleForm.imgType === 1) {//广告封面-图片
+        this.ruleForm.advImg = this.ruleForm.advImgValue;
+      } else if (this.ruleForm.imgType === 2) {////广告封面-视频
+        this.ruleForm.advImg = this.ruleForm.advVideoValue;
+      }
+
+      if (this.ruleForm.urlType === 1) {//广告链接
+        this.ruleForm.advUrl = this.ruleForm.advUrlValue;
+      } else if (this.ruleForm.urlType === 2) {//广告包
+        this.ruleForm.advUrl = this.ruleForm.advPackageUrlValue;
+      } else if (this.ruleForm.urlType === 3) {//加粉
+        this.ruleForm.advUrl = this.ruleForm.attentionTarget;
+      }
+
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+
+          AddAdv(instance.ruleForm).then(res => {
+            this.$message.success("保存成功");
+            this.Back()
+          })
+        } else {
+          return false;
+        }
+      });
+    },
+    //返回
+    Back() {
+      this.$router.go(-1)
+    },
+    getadImgUrl(getUrl, imgType) {
+      if (imgType === 1) {
+        this.ruleForm.advImgValue = getUrl
+      } else if (imgType === 2) {
+        this.ruleForm.advVideoValue = getUrl
+      }
+      this.$refs.ruleForm.validateField('fileList') // 手动触发fileList校验规则
+    },
+    getAdvUrl(url) {
+      this.ruleForm.advPackageUrlValue = url;
+    }
+  }
+}
+</script>
+<style lang="scss">
+.game {
+  padding: 32px;
+  background-color: #fff;
+
+  .title {
+    font-size: 16px;
+    color: rgba(144, 147, 153, 1);
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .el-form {
+
+    .el-form-item {
+      margin-bottom: 20px;
+    }
+
+    .el-radio {
+      margin-right: 50px;
+    }
+
+    .el-form-item__label {
+      font-size: 16px;
+      color: #131414;
+      padding-right: 28px;
+    }
+
+    .el-button {
+      width: 150px;
+      padding: 12px 20px;
+      margin-top: 40px;
+    }
+  }
+}
+</style>
