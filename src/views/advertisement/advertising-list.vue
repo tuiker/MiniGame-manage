@@ -23,11 +23,32 @@
         </el-table-column>
         <el-table-column label="类型" prop="advTypeName" min-width="120" align="center"></el-table-column>
         <el-table-column label="广告名称" prop="advName" min-width="120" align="center"></el-table-column>
+        <el-table-column label="封面类型" prop="imgType" min-width="120" align="center">
+          <template slot-scope="scope">
+            <span v-show="scope.row.imgType == 1">图片</span>
+            <span v-show="scope.row.imgType == 2">视频</span>
+          </template>
+        </el-table-column>
         <el-table-column label="广告封面" prop="advImg" min-width="120" align="center">
           <template slot-scope="scope">
-            <video v-if="scope.row.imgType == 2" style="width: 100px; height: 100px;object-fit: cover;"
-              :src="scope.row.advImg"></video>
-            <el-image v-else style="width: 100px; height: 100px" :src="scope.row.advImg"></el-image>
+            <video v-if="scope.row.imgType == 2" style="width: 100px; height: 100px;object-fit: cover;cursor: pointer;"
+              :src="scope.row.advImg" @click="openVideoDialog(scope.row.advImg)"></video>
+            <el-image v-else style="width: 100px; height: 100px" :src="scope.row.advImg"
+              :preview-src-list="[scope.row.advImg]"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column label="广告路径类型" prop="urlType" min-width="120" align="center">
+          <template slot-scope="scope">
+            <span v-show="scope.row.urlType == 1">广告链接</span>
+            <span v-show="scope.row.urlType == 2">广告包</span>
+            <span v-show="scope.row.urlType == 3">加粉</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="广告路径" prop="advUrl" min-width="120" align="center">
+          <template slot-scope="scope">
+            <el-link v-show="scope.row.urlType == 1" :href="scope.row.advUrl" target="_blank" type="primary"
+              :underline="false">{{ scope.row.advUrl }}</el-link>
+            <span v-show="scope.row.urlType != 1">{{ scope.row.advUrl }}</span>
           </template>
         </el-table-column>
         <el-table-column label="添加时间" prop="createTime" min-width="120" align="center"></el-table-column>
@@ -37,6 +58,11 @@
         layout="->,total, sizes, prev, pager, next, jumper" :total="paginationParams.totals">
       </el-pagination>
     </div>
+
+    <el-dialog title="视频预览" :visible.sync="videoDialogVisible" width="700px" :before-close="handleClose">
+      <video style="width: 100%; height: 400px;" :src="previewVideoUrl" controls></video>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -85,6 +111,8 @@ export default {
         totals: 1,
         size: 1,
       },
+      videoDialogVisible: false,
+      previewVideoUrl: '',
     }
   },
   created() {
@@ -126,6 +154,16 @@ export default {
     checkIsVideo(url) {
       return url.endsWith('.mp4')
     },
+    //打开视频预览对话框
+    openVideoDialog(url) {
+      this.previewVideoUrl = url;
+      this.videoDialogVisible = true;
+    },
+    //关闭视频预览对话框
+    handleClose(done) {
+      this.previewVideoUrl = '';
+      this.videoDialogVisible = false;
+    }
   }
 };
 </script>
