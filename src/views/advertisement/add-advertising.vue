@@ -35,10 +35,17 @@
         :rules="ruleForm.urlType === 2 ? { required: true, message: '请上传广告包', trigger: 'change' } : null">
         <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)" />
       </el-form-item>
-      <el-form-item v-show="ruleForm.urlType === 3" label="加粉账号:" prop="attentionTarget"
-        :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入加粉账号', trigger: 'blur' } : null">
-        <el-input v-model="ruleForm.attentionTarget" style="width: 400px;" placeholder="请输入加粉账号"></el-input>
-      </el-form-item>
+      <div v-show="ruleForm.urlType === 3">
+        <el-form-item label="粉丝链接:" prop="attentionType">
+          <el-radio v-model="ruleForm.attentionType" :label="1">Kakao</el-radio>
+          <el-radio v-model="ruleForm.attentionType" :label="2">Bend</el-radio>
+        </el-form-item>
+        <el-form-item prop="attentionTarget"
+          :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入广告主加粉账户', trigger: 'blur' } : null">
+          <el-input type="textarea" resize="none" :rows="4" v-model="ruleForm.attentionTarget" style="width: 400px;"
+            placeholder="请输入广告主加粉账户"></el-input>
+        </el-form-item>
+      </div>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
         <el-button style="margin-left: 30px;" @click="Back">返回</el-button>
@@ -62,17 +69,18 @@ export default {
       AdPositionIds: [],
       packageUrlList: [],
       ruleForm: {
-        "advName": '',
-        "advTypeId": '',
-        "imgType": 1,
-        "advImg": '',
-        "advImgValue": '',
-        "advVideoValue": '',
-        "advUrl": '',
-        "urlType": 1,
-        "advUrlValue": '',
-        "advPackageUrlValue": '',
-        "attentionTarget": '',
+        advName: '',
+        advTypeId: '',
+        imgType: 1,
+        advImg: '',
+        advImgValue: '',
+        advVideoValue: '',
+        advUrl: '',
+        urlType: 1,
+        advUrlValue: '',
+        advPackageUrlValue: '',
+        attentionTarget: '',
+        attentionType: 1,
       },
       rules: {
         advName: [
@@ -116,6 +124,8 @@ export default {
       } else if (this.ruleForm.urlType === 2) {//广告包
         this.ruleForm.advUrl = this.ruleForm.advPackageUrlValue;
       } else if (this.ruleForm.urlType === 3) {//加粉
+        //加粉类型 = 3 * 10 + n 
+        this.ruleForm.urlType = this.ruleForm.urlType * 10 + this.ruleForm.attentionType
         this.ruleForm.advUrl = this.ruleForm.attentionTarget;
       }
 

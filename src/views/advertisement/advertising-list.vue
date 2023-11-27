@@ -41,7 +41,7 @@
           <template slot-scope="scope">
             <span v-show="scope.row.urlType == 1">广告链接</span>
             <span v-show="scope.row.urlType == 2">广告包</span>
-            <span v-show="scope.row.urlType == 3">加粉</span>
+            <span v-show="scope.row.urlType > 30 && scope.row.urlType < 40">加粉</span>
           </template>
         </el-table-column>
         <el-table-column label="广告路径" prop="advUrl" min-width="120" align="center">
