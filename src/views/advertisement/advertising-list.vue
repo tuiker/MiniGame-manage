@@ -188,5 +188,11 @@ export default {
     padding: 20px 40px;
     background: #fff;
   }
+
+}
+</style>
+<style>
+.el-image-viewer__close {
+  color: #fff !important;
 }
 </style>
