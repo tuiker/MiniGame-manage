@@ -48,6 +48,7 @@
             <el-button @click="todetails(scope.row)" type="text">{{ scope.row.gameName }}</el-button>
           </template>
         </el-table-column>
+        <el-table-column prop='gameClickNum' label="游戏点击（次）" min-width="120" align="center" />
         <el-table-column prop='advShowNum' label="广告展示（次）" min-width="120" align="center" />
         <el-table-column prop='advDownloadNum' label="应用下载（次）" min-width="120" align="center" />
         <el-table-column prop='advShareNum' label="游戏分享（次）" min-width="120" align="center" />

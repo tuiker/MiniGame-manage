@@ -46,6 +46,11 @@ export default {
         width: '120',
         align: "center"
       }, {
+        prop: 'gameClickNum',
+        label: '游戏点击（次）',
+        width: '120',
+        align: "center"
+      }, {
         prop: 'advGameNum',
         label: '广告展示（次）',
         width: '120',
