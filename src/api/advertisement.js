@@ -62,3 +62,11 @@ export function AddAdv(params) {
     data: params
   })
 }
+
+export function UpdateAdv(data) {
+  return request({
+    url: '/houTai/advertising/updateAdv',
+    method: 'post',
+    data
+  })
+}

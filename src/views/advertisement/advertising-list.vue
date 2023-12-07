@@ -52,6 +52,11 @@
           </template>
         </el-table-column>
         <el-table-column label="添加时间" prop="createTime" min-width="120" align="center"></el-table-column>
+        <el-table-column fixed="right" label="操作" min-width="140" align="center">
+          <template slot-scope="scope">
+            <el-button @click="editRow(scope.row)" type="text" size="small">编辑</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="1"
         :page-sizes="[10, 20, 50, 100]" :page-size="paginationParams.pages"
@@ -63,41 +68,20 @@
       <video style="width: 100%; height: 400px;" :src="previewVideoUrl" controls></video>
     </el-dialog>
 
+    <add-advertising ref="addAdvDialog" @success="onRefresh"></add-advertising>
   </div>
 </template>
 <script>
 import { GetAdvList } from '@/api/advertisement'
 import { GetAdAll } from '@/api/tool'
+import AddAdvertising from './add-advertising.vue';
 export default {
+  components: {
+    AddAdvertising
+  },
   data() {
     return {
       AdValue: [],
-      cols: [{
-        prop: 'id',
-        label: '广告ID',
-        width: '100',
-        align: "center"
-      }, {
-        prop: 'advTypeName',
-        label: '类型',
-        width: '120',
-        align: "center"
-      }, {
-        prop: 'advName',
-        label: '广告名称',
-        width: '120',
-        align: "center"
-      }, {
-        prop: 'advImg',
-        label: '广告封面',
-        width: '140',
-        align: "center"
-      }, {
-        prop: 'createTime',
-        label: '添加时间',
-        width: '120',
-        align: "center"
-      }],
       value: '',
       tableData: [],
       total: 1,
@@ -116,13 +100,16 @@ export default {
     }
   },
   created() {
-    //获取广告
-    GetAdAll().then(res => {
-      this.AdValue = res.data
-    })
-    this.getAdvList()
+    this.onRefresh()
   },
   methods: {
+    onRefresh() {
+      //获取广告
+      GetAdAll().then(res => {
+        this.AdValue = res.data
+      })
+      this.getAdvList()
+    },
     //广告搜索
     getAdValue(val) {
       this.params.advId = val
@@ -130,7 +117,11 @@ export default {
     },
     //添加广告
     addClick() {
-      this.$router.push({ path: '/add-advertising' })
+      this.$refs.addAdvDialog.open();
+    },
+    //编辑广告
+    editRow(row) {
+      this.$refs.addAdvDialog.open(row);
     },
     //获取列表
     getAdvList() {

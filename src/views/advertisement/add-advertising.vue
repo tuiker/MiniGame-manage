@@ -1,72 +1,75 @@
 <template>
-  <div class="game">
-    <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="200px">
-      <el-form-item label="广告名称:" prop="advName" placeholder="请输入广告名称">
-        <el-input v-model="ruleForm.advName" style="width: 400px;"></el-input>
-      </el-form-item>
-      <el-form-item label="游戏类型:" prop="advTypeId">
-        <el-radio-group v-model="ruleForm.advTypeId" v-for="item in GameTypeList" :key="item.id">
-          <el-radio :label=item.id>{{ item.typeName }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="广告封面类型:" prop="imgType">
-        <el-radio v-model="ruleForm.imgType" :label="1">图片</el-radio>
-        <el-radio v-model="ruleForm.imgType" :label="2">视频</el-radio>
-      </el-form-item>
-      <el-form-item v-show="ruleForm.imgType === 1" label="广告封面:" prop="advImgValue"
-        :rules="ruleForm.imgType === 1 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
-        <upload :limit="1" :file-list="advImgList" :fileSize="10" @getUrl="getadImgUrl($event, 1)" />
-      </el-form-item>
-      <el-form-item v-show="ruleForm.imgType === 2" label="广告封面:" prop="advVideoValue"
-        :rules="ruleForm.imgType === 2 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
-        <upload-file :limit="1" :accept="'.mp4'" :file-list="advImgList" @getUrl="getadImgUrl($event, 2)" />
-      </el-form-item>
-      <el-form-item label="广告路径类型:" prop="urlType">
-        <el-radio v-model="ruleForm.urlType" :label="1">广告链接</el-radio>
-        <el-radio v-model="ruleForm.urlType" :label="2">上传广告包</el-radio>
-        <el-radio v-model="ruleForm.urlType" :label="3">加粉</el-radio>
-      </el-form-item>
-      <el-form-item v-show="ruleForm.urlType === 1" label="广告链接:" prop="advUrlValue"
-        :rules="ruleForm.urlType === 1 ? { required: true, message: '请填写广告链接地址', trigger: 'change' } : null">
-        <el-input type="textarea" resize="none" :rows="4" maxlength="200" v-model="ruleForm.advUrlValue" placeholder="请输入"
-          style="width: 400px;"></el-input>
-      </el-form-item>
-      <el-form-item v-show="ruleForm.urlType === 2" label="上传广告包:" prop="advPackageUrlValue"
-        :rules="ruleForm.urlType === 2 ? { required: true, message: '请上传广告包', trigger: 'change' } : null">
-        <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)" />
-      </el-form-item>
-      <div v-show="ruleForm.urlType === 3">
-        <el-form-item label="粉丝链接:" prop="attentionType">
-          <el-radio v-model="ruleForm.attentionType" :label="1">Kakao</el-radio>
-          <el-radio v-model="ruleForm.attentionType" :label="2">Bend</el-radio>
+  <el-dialog :title="titel" :visible.sync="visible" width="900px" top="6vh" @close="resetFormData" v-loading="loading">
+    <div class="game">
+      <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="200px">
+        <el-form-item label="广告名称:" prop="advName" placeholder="请输入广告名称">
+          <el-input v-model="ruleForm.advName" style="width: 400px;"></el-input>
         </el-form-item>
-        <el-form-item prop="attentionTarget"
-          :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入广告主加粉账户', trigger: 'blur' } : null">
-          <el-input type="textarea" resize="none" :rows="4" v-model="ruleForm.attentionTarget" style="width: 400px;"
-            placeholder="请输入广告主加粉账户"></el-input>
+        <el-form-item label="游戏类型:" prop="advTypeId">
+          <el-radio-group v-model="ruleForm.advTypeId" v-for="item in GameTypeList" :key="item.id">
+            <el-radio :label=item.id>{{ item.typeName }}</el-radio>
+          </el-radio-group>
         </el-form-item>
-      </div>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-        <el-button style="margin-left: 30px;" @click="Back">返回</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
+        <el-form-item label="广告封面类型:" prop="imgType">
+          <el-radio v-model="ruleForm.imgType" :label="1">图片</el-radio>
+          <el-radio v-model="ruleForm.imgType" :label="2">视频</el-radio>
+        </el-form-item>
+        <el-form-item v-show="ruleForm.imgType === 1" label="广告封面:" prop="advImgValue"
+          :rules="ruleForm.imgType === 1 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
+          <upload :limit="1" :file-list="advImgList" :fileSize="10" @getUrl="getadImgUrl($event, 1)" />
+        </el-form-item>
+        <el-form-item v-show="ruleForm.imgType === 2" label="广告封面:" prop="advVideoValue"
+          :rules="ruleForm.imgType === 2 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
+          <upload-file :limit="1" :accept="'.mp4'" :file-list="advVideoList" @getUrl="getadImgUrl($event, 2)" />
+        </el-form-item>
+        <el-form-item label="广告路径类型:" prop="urlType">
+          <el-radio v-model="ruleForm.urlType" :label="1">广告链接</el-radio>
+          <el-radio v-model="ruleForm.urlType" :label="2">上传广告包</el-radio>
+          <el-radio v-model="ruleForm.urlType" :label="3">加粉</el-radio>
+        </el-form-item>
+        <el-form-item v-show="ruleForm.urlType === 1" label="广告链接:" prop="advUrlValue"
+          :rules="ruleForm.urlType === 1 ? { required: true, message: '请填写广告链接地址', trigger: 'change' } : null">
+          <el-input type="textarea" resize="none" :rows="4" maxlength="200" v-model="ruleForm.advUrlValue"
+            placeholder="请输入" style="width: 400px;"></el-input>
+        </el-form-item>
+        <el-form-item v-show="ruleForm.urlType === 2" label="上传广告包:" prop="advPackageUrlValue"
+          :rules="ruleForm.urlType === 2 ? { required: true, message: '请上传广告包', trigger: 'change' } : null">
+          <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)" />
+        </el-form-item>
+        <div v-show="ruleForm.urlType === 3">
+          <el-form-item label="粉丝链接:" prop="attentionType">
+            <el-radio v-model="ruleForm.attentionType" :label="1">Kakao</el-radio>
+            <el-radio v-model="ruleForm.attentionType" :label="2">Bend</el-radio>
+          </el-form-item>
+          <el-form-item prop="attentionTarget"
+            :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入广告主加粉账户', trigger: 'blur' } : null">
+            <el-input type="textarea" resize="none" :rows="4" v-model="ruleForm.attentionTarget" style="width: 400px;"
+              placeholder="请输入广告主加粉账户"></el-input>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="visible = false">取 消</el-button>
+      <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+    </span>
+  </el-dialog>
 </template>
 <script>
 import Upload from './components/Upload.vue'
 import UploadFile from './components/UploadFile.vue'
 import { GetGameType } from '@/api/tool'
-import { AddAdv } from '@/api/advertisement'
+import { AddAdv, UpdateAdv } from '@/api/advertisement'
 
 export default {
   data() {
     return {
+      titel: '',
+      loading: false,
+      visible: false,
       advImgList: [],
-      CarrierList: [],
+      advVideoList: [],
       GameTypeList: [],
-      LanguageList: [],
-      AdPositionIds: [],
       packageUrlList: [],
       ruleForm: {
         advName: '',
@@ -94,8 +97,6 @@ export default {
           { required: true, message: '请填写广告地址', trigger: 'blur' }
         ]
       },
-      imageUrl: '',
-      describe: '',
     }
   },
   components: {
@@ -109,6 +110,35 @@ export default {
     })
   },
   methods: {
+    open(data) {
+      this.resetFormData()
+      if (data && data.id) {
+        this.titel = '编辑广告'
+        this.ruleForm = Object.assign(this.ruleForm, data)
+        if (data.imgType == 1) {
+          this.ruleForm.advImgValue = data.advImg
+          this.advImgList = [{ name: data.advImg, url: data.advImg }]
+        } else {
+          this.ruleForm.advVideoValue = data.advImg
+          this.advVideoList = [{ name: data.advImg, url: data.advImg }]
+        }
+
+        if (data.urlType == 1) {
+          this.ruleForm.advUrlValue = data.advUrl
+        } else if (data.urlType == 2) {
+          this.ruleForm.advPackageUrlValue = data.advUrl
+          this.packageUrlList = [{ name: data.advUrl, url: data.advUrl }]
+        } else {
+          this.ruleForm.attentionType = data.urlType % 10
+          this.ruleForm.urlType = 3
+          this.ruleForm.attentionTarget = data.advUrl
+        }
+      } else {
+        this.titel = '添加广告'
+      }
+
+      this.visible = true
+    },
     //提交
     submitForm(formName) {
       let instance = this;
@@ -124,18 +154,33 @@ export default {
       } else if (this.ruleForm.urlType === 2) {//广告包
         this.ruleForm.advUrl = this.ruleForm.advPackageUrlValue;
       } else if (this.ruleForm.urlType === 3) {//加粉
-        //加粉类型 = 3 * 10 + n 
-        this.ruleForm.urlType = this.ruleForm.urlType * 10 + this.ruleForm.attentionType
         this.ruleForm.advUrl = this.ruleForm.attentionTarget;
       }
 
       this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          AddAdv(instance.ruleForm).then(res => {
-            this.$message.success("保存成功");
-            this.Back()
-          })
+          this.loading = true
+          if (this.ruleForm.urlType === 3) {//加粉
+            //加粉类型 = 3 * 10 + n 
+            this.ruleForm.urlType = this.ruleForm.urlType * 10 + this.ruleForm.attentionType
+          }
+          if (this.ruleForm.id) {
+            UpdateAdv(instance.ruleForm).then(res => {
+              this.$message.success("修改成功");
+              this.$emit('success')
+              this.visible = false
+            }).finally(() => {
+              this.loading = false
+            })
+          } else {
+            AddAdv(instance.ruleForm).then(res => {
+              this.$message.success("添加成功");
+              this.$emit('success')
+              this.visible = false
+            }).finally(() => {
+              this.loading = false
+            })
+          }
         } else {
           return false;
         }
@@ -155,7 +200,27 @@ export default {
     },
     getAdvUrl(url) {
       this.ruleForm.advPackageUrlValue = url;
-    }
+    },
+    //重置表单
+    resetFormData() {
+      this.advImgList = []
+      this.advVideoList = []
+      this.packageUrlList = []
+      this.ruleForm = {
+        advName: '',
+        advTypeId: '',
+        imgType: 1,
+        advImg: '',
+        advImgValue: '',
+        advVideoValue: '',
+        advUrl: '',
+        urlType: 1,
+        advUrlValue: '',
+        advPackageUrlValue: '',
+        attentionTarget: '',
+        attentionType: 1,
+      }
+    },
   }
 }
 </script>
