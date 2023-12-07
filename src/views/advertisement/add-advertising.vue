@@ -16,11 +16,13 @@
         </el-form-item>
         <el-form-item v-show="ruleForm.imgType === 1" label="广告封面:" prop="advImgValue"
           :rules="ruleForm.imgType === 1 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
-          <upload :limit="1" :file-list="advImgList" :fileSize="10" @getUrl="getadImgUrl($event, 1)" />
+          <upload :limit="1" :fileList="advImgList" :fileSize="10" @getUrl="getadImgUrl($event, 1)"
+            @delUrl="deleteAdvImg" />
         </el-form-item>
         <el-form-item v-show="ruleForm.imgType === 2" label="广告封面:" prop="advVideoValue"
           :rules="ruleForm.imgType === 2 ? { required: true, message: '请上传广告封面', trigger: 'change' } : null">
-          <upload-file :limit="1" :accept="'.mp4'" :file-list="advVideoList" @getUrl="getadImgUrl($event, 2)" />
+          <upload-file :limit="1" :accept="'.mp4'" :fileList="advVideoList" @getUrl="getadImgUrl($event, 2)"
+            @delUrl="deleteAdvVideo" />
         </el-form-item>
         <el-form-item label="广告路径类型:" prop="urlType">
           <el-radio v-model="ruleForm.urlType" :label="1">广告链接</el-radio>
@@ -34,7 +36,8 @@
         </el-form-item>
         <el-form-item v-show="ruleForm.urlType === 2" label="上传广告包:" prop="advPackageUrlValue"
           :rules="ruleForm.urlType === 2 ? { required: true, message: '请上传广告包', trigger: 'change' } : null">
-          <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)" />
+          <upload-file :limit="1" :accept="'.apk, .aab'" :file-list="packageUrlList" @getUrl="getAdvUrl($event)"
+            @delUrl="deletePackage" />
         </el-form-item>
         <div v-show="ruleForm.urlType === 3">
           <el-form-item label="粉丝链接:" prop="attentionType">
@@ -111,24 +114,23 @@ export default {
   },
   methods: {
     open(data) {
-      this.resetFormData()
       if (data && data.id) {
         this.titel = '编辑广告'
         this.ruleForm = Object.assign(this.ruleForm, data)
-        if (data.imgType == 1) {
+        if (data.imgType == 1) {//广告封面-图片
           this.ruleForm.advImgValue = data.advImg
           this.advImgList = [{ name: data.advImg, url: data.advImg }]
-        } else {
+        } else {//广告封面-视频
           this.ruleForm.advVideoValue = data.advImg
           this.advVideoList = [{ name: data.advImg, url: data.advImg }]
         }
 
-        if (data.urlType == 1) {
+        if (data.urlType == 1) {//广告链接
           this.ruleForm.advUrlValue = data.advUrl
-        } else if (data.urlType == 2) {
+        } else if (data.urlType == 2) {//广告包
           this.ruleForm.advPackageUrlValue = data.advUrl
           this.packageUrlList = [{ name: data.advUrl, url: data.advUrl }]
-        } else {
+        } else {//加粉
           this.ruleForm.attentionType = data.urlType % 10
           this.ruleForm.urlType = 3
           this.ruleForm.attentionTarget = data.advUrl
@@ -145,7 +147,7 @@ export default {
 
       if (this.ruleForm.imgType === 1) {//广告封面-图片
         this.ruleForm.advImg = this.ruleForm.advImgValue;
-      } else if (this.ruleForm.imgType === 2) {////广告封面-视频
+      } else if (this.ruleForm.imgType === 2) {//广告封面-视频
         this.ruleForm.advImg = this.ruleForm.advVideoValue;
       }
 
@@ -200,6 +202,15 @@ export default {
     },
     getAdvUrl(url) {
       this.ruleForm.advPackageUrlValue = url;
+    },
+    deleteAdvImg() {
+      this.ruleForm.advImgValue = ''
+    },
+    deleteAdvVideo() {
+      this.ruleForm.advVideoValue = ''
+    },
+    deletePackage() {
+      this.ruleForm.advPackageUrlValue = ''
     },
     //重置表单
     resetFormData() {

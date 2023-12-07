@@ -37,10 +37,13 @@ export default {
   },
   //监听上传图片的数组(为了处理修改时,自动渲染问题,和上传按钮消失问题);
   watch: {
-    fileList(newName, oldName) {
-      if (newName.length == this.limit) this.showUpload = true;
-      else this.showUpload = false;
-    },
+    fileList: {
+      handler: function (newName, oldName) {
+        if (newName.length >= this.limit) this.showUpload = true;
+        else this.showUpload = false;
+      },
+      immediate: true
+    }
   },
   methods: {
     //文件列表移除文件时的函数
@@ -70,7 +73,7 @@ export default {
       if (size > this.fileSize) {
         this.$notify.warning({
           title: "警告",
-          message: "文件大小必须小于"+this.fileSize+"M",
+          message: "文件大小必须小于" + this.fileSize + "M",
         });
       } else {
         if (this.limit == 1) this.imgUrl = []; //此处判断为一张的时候需要清空数组
@@ -125,6 +128,7 @@ export default {
   height: 150px;
   border-radius: 0px;
 }
+
 /* 去除upload组件自带的动画效果 */
 .el-upload-list__item {
   transition: none !important;
