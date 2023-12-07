@@ -23,6 +23,11 @@
         <el-col :xs="12" :sm="12" :lg="5">
           <el-input v-model="params.advName" placeholder="请输入广告名称"></el-input>
         </el-col>
+        <el-col :xs="12" :sm="12" :lg="4">
+          <el-date-picker style="width: 100%;" value-format="yyyy-MM-dd" v-model="params.dateStr" type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-col>
         <el-col :xs="12" :sm="12" :lg="2">
           <el-button type="primary" @click="inquire">查询</el-button>
         </el-col>
@@ -43,7 +48,6 @@
             <el-button @click="todetails(scope.row)" type="text">{{ scope.row.gameName }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop='advNum' label="广告数" min-width="120" align="center" />
         <el-table-column prop='advShowNum' label="广告展示（次）" min-width="120" align="center" />
         <el-table-column prop='advDownloadNum' label="应用下载（次）" min-width="120" align="center" />
         <el-table-column prop='advShareNum' label="游戏分享（次）" min-width="120" align="center" />
@@ -91,9 +95,10 @@ export default {
       tableData: [],
       total: 1,
       params: {
-        clickTypeId: 0,
+        clickTypeId: null,
         advName: '',
-        carrierId: 0,
+        carrierId: null,
+        dateStr: '',
         page: 1,
         pageSize: 10
       },
