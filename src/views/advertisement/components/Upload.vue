@@ -33,6 +33,7 @@ export default {
       showUpload: false, //控制limit最大值之后 关闭上传按钮
       dialogVisible: false, //查看图片弹出框
       imgUrl: [], //上传图片后地址合集
+      loading: null,
     };
   },
   //监听上传图片的数组(为了处理修改时,自动渲染问题,和上传按钮消失问题);
@@ -76,6 +77,11 @@ export default {
           message: "文件大小必须小于" + this.fileSize + "M",
         });
       } else {
+        this.loading = this.$loading({
+          lock: true,
+          text: '上传中',
+          spinner: 'el-icon-loading'
+        });
         if (this.limit == 1) this.imgUrl = []; //此处判断为一张的时候需要清空数组
         let params = new FormData();
         params.append("files", file);
@@ -88,6 +94,11 @@ export default {
           //调用父组件的方法来传递图片参数
           // this.$emit("getUrl", this.imgUrl);
           // } else this.$message.error("上传失败");
+          this.$message.success("上传成功！");
+          this.loading.close();
+        }).catch((err) => {
+          this.loading.close();
+          this.$message.error("上传失败，请重试！");
         });
       }
     },
