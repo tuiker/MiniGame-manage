@@ -9,7 +9,7 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-button type="primary" style="float: right;" @click="addClick">添加游戏</el-button>
+        <el-button v-permission="'addGame'" type="primary" style="float: right;" @click="addClick">添加游戏</el-button>
       </el-row>
     </div>
     <div class="gametable">
@@ -39,8 +39,9 @@
           </template> -->
           <el-table-column fixed="right" label="操作" min-width="140" align="center">
             <template slot-scope="scope">
-              <el-button @click="toAdd(scope.row)" type="text" size="small">植入广告</el-button>
-              <el-button @click="addScript(scope.row)" type="text" size="small">数据追踪</el-button>
+              <el-button v-permission="'addGameAdv'" @click="toAdd(scope.row)" type="text" size="small">植入广告</el-button>
+              <el-button v-permission="'addScript'" @click="addScript(scope.row)" type="text"
+                size="small">数据追踪</el-button>
               <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">详情</el-button> -->
             </template>
           </el-table-column>

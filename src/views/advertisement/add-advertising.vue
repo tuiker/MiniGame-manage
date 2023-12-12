@@ -44,6 +44,7 @@
           <el-form-item label="粉丝链接:" prop="attentionType">
             <el-radio v-model="ruleForm.attentionType" :label="1">Kakao</el-radio>
             <el-radio v-model="ruleForm.attentionType" :label="2">Bend</el-radio>
+            <el-radio v-model="ruleForm.attentionType" :label="3">whatsapp</el-radio>
           </el-form-item>
           <el-form-item prop="attentionTarget"
             :rules="ruleForm.urlType === 3 ? { required: true, message: '请输入广告主加粉账户', trigger: 'blur' } : null">

@@ -9,7 +9,7 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-button type="primary" style="float: right;" @click="addClick">添加广告</el-button>
+        <el-button v-permission="'addAdv'" type="primary" style="float: right;" @click="addClick">添加广告</el-button>
       </el-row>
     </div>
     <div class="table">
@@ -54,7 +54,7 @@
         <el-table-column label="添加时间" prop="createTime" min-width="120" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" min-width="140" align="center">
           <template slot-scope="scope">
-            <el-button @click="editRow(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button v-permission="'editAdv'" @click="editRow(scope.row)" type="text" size="small">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
