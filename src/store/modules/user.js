@@ -1,12 +1,16 @@
 import { login, logout, getInfo } from '@/api/user'
+import { GetSysMenuList } from '@/api/sysMenu'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import Layout from '@/layout'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    routes: null,//动态路由
+    btnPermissions: []//按钮权限
   }
 }
 
@@ -24,7 +28,13 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
-  }
+  },
+  SET_ROUTES: (state, routes) => {
+    state.routes = routes
+  },
+  SET_BTN_PERMISSIONS: (state, btnPermissions) => {
+    state.btnPermissions = btnPermissions
+  },
 }
 
 const actions = {
@@ -89,7 +99,80 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+
+  // 生成动态路由
+  async generateRoutes({ commit }) {
+    return new Promise(async (resolve, reject) => {
+      let res = await GetSysMenuList();
+      if (res.code === 1000) {
+        btnPermissions.length = 0
+        //将后端返回的菜单数据转换为route路由数据
+        let routes = convert(res.data)
+        //根据路由匹配规则，path: '*'跳转404页面需要在路由数组的最后
+        routes.push({ path: '*', redirect: '/404', hidden: true })
+        commit('SET_ROUTES', routes)
+        commit('SET_BTN_PERMISSIONS', btnPermissions)
+
+        resolve(routes)
+      } else {
+        reject(res)
+      }
+    })
+  },
+}
+
+const btnPermissions = []
+//将后端返回的菜单数据转换为route路由数据
+const convert = (permissionList) => {
+  let routes = [];
+  for (let i = 0; i < permissionList.length; i++) {
+    let item = permissionList[i];
+
+    if (item.type == 3) {//按钮权限
+      btnPermissions.push(item.component)
+      continue
+    }
+
+    let route = getRoute(item)
+    if (item.type == 1) {//目录
+      route.component = Layout
+    }
+
+    if (item.childrenList && item.childrenList.length > 0) {
+      //有子菜单，进行递归
+      route.children = convert(item.childrenList)
+    }
+
+    routes.push(route)
   }
+
+  return routes
+}
+
+
+// 返回路由的基本格式
+const getRoute = (item) => {
+  // 路由基本格式
+  let route = {
+    // 路由的路径
+    path: item.path,
+    // 路由名
+    name: item.name,
+    // 路由所在组件
+    // component: (resolve) => require([`@/layout/Index`], resolve),
+    component: (resolve) => require(['@/views' + item.component], resolve),
+    meta: {
+      id: item.id,
+      title: item.name,
+      icon: item.icon
+    },
+    hidden: item.hidden == 1,
+    // 路由的子路由
+    children: []
+  }
+  // 返回 route
+  return route
 }
 
 export default {

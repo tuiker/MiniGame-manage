@@ -17,7 +17,7 @@
         height: '56px', color: '#101010', fontSize: '16px', 'text-align': 'center'
       }" :row-style="{ 'height': '20px', 'padding': '0' }">
         <el-table-column label="序号" type="index" width="100" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             <span>{{ (params.page - 1) * params.pageSize + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
@@ -180,10 +180,5 @@ export default {
     background: #fff;
   }
 
-}
-</style>
-<style>
-.el-image-viewer__close {
-  color: #fff !important;
 }
 </style>

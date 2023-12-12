@@ -1,5 +1,6 @@
 <template>
-  <el-dialog :title="titel" :visible.sync="visible" width="900px" top="6vh" @close="resetFormData" v-loading="loading">
+  <el-dialog :title="titel" :visible.sync="visible" width="900px" top="6vh" @close="resetFormData" v-loading="loading"
+    :close-on-click-modal="false">
     <div class="game">
       <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="200px">
         <el-form-item label="广告名称:" prop="advName" placeholder="请输入广告名称">

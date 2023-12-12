@@ -5,6 +5,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { getToken } from '@/utils/auth'
 import getPageTitle from '@/utils/get-page-title'
+import Layout from '@/layout'
 
 NProgress.configure({ showSpinner: false })
 
@@ -13,7 +14,6 @@ const whiteList = ['/login']
 
 
 router.afterEach(() => {
-  localStorage.getItem
   NProgress.done()
 })
 
@@ -26,11 +26,10 @@ router.beforeEach(async (to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next()
       NProgress.done()
     } else {
       //从vuex中获取动态路由

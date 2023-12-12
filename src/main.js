@@ -14,7 +14,8 @@ import router from './router'
 
 import '@/icons'
 import '@/permission'
-import {Radio,RadioGroup,} from 'element-ui';
+import { Radio, RadioGroup, } from 'element-ui';
+import '@/components/permission/hasPermission'
 Vue.use(ElementUI)
 
 Vue.use(Radio);

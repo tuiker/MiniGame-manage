@@ -16,10 +16,11 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
+import { constantRoutes } from '@/router'
 
 export default {
-  data(){
-    return{
+  data() {
+    return {
       canActiveItemList: [],//可以拥有选中状态的菜单
     }
   },
@@ -29,7 +30,7 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      return constantRoutes.concat(this.$store.state.user.routes)
     },
     activeMenu() {
       const route = this.$route
@@ -43,7 +44,7 @@ export default {
       //   return meta.targetPath;
       // }
       //跳转的目标路由路径在可以拥有选中状态的菜单集合中才去进行选中操作
-      if(this.canActiveItemList.some(item => item === path)){
+      if (this.canActiveItemList.some(item => item === path)) {
         return path
       }
     },
@@ -57,18 +58,18 @@ export default {
       return !this.sidebar.opened
     }
   },
-  mounted(){
-    this.getCanActiveItem(this.$router.options.routes);
+  mounted() {
+    this.getCanActiveItem(this.routes);
     console.log(this.canActiveItemList);
   },
   methods: {
     //递归获取可选中的菜单路径
-    getCanActiveItem(routers){
+    getCanActiveItem(routers) {
       let self = this;
       routers.forEach(item => {
-        if((!item.children || item.children.length < 1) && !item.hidden){
+        if ((!item.children || item.children.length < 1) && !item.hidden) {
           self.canActiveItemList.push(item.path);
-        }else if(item.children && item.children.length > 0){
+        } else if (item.children && item.children.length > 0) {
           self.getCanActiveItem(item.children);
         }
       });
